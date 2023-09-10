@@ -2,6 +2,10 @@ package lk.ijse.pos.servlet.servlet;
 
 
 
+import lk.ijse.pos.servlet.bo.BOTypes;
+import lk.ijse.pos.servlet.bo.FactoryBO;
+import lk.ijse.pos.servlet.bo.custom.impl.CustomerBOImpl;
+import lk.ijse.pos.servlet.dto.CustomerDTO;
 import lk.ijse.pos.servlet.util.ResponseUtil;
 
 import javax.json.*;
@@ -17,6 +21,7 @@ import java.sql.*;
 @WebServlet(urlPatterns = {"/customer"})
 public class CustomerServlet extends HttpServlet {
 
+    private final CustomerBOImpl customerBO = (CustomerBOImpl) FactoryBO.getFactoryBO().getInstance(BOTypes.Customer);
     public CustomerServlet(){
         System.out.println("Customer Servlet Constructor Invoked");
     }
@@ -57,30 +62,15 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String cusID = req.getParameter("cusID");
-        String cusName = req.getParameter("cusName");
-        String cusAddress = req.getParameter("cusAddress");
-        String cusSalary = req.getParameter("cusSalary");
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "sanu1234");
-
-            PreparedStatement pstm = connection.prepareStatement("insert into Customer values(?,?,?,?)");
-            pstm.setObject(1, cusID);
-            pstm.setObject(2, cusName);
-            pstm.setObject(3, cusAddress);
-            pstm.setObject(4, cusSalary);
-
-            if (pstm.executeUpdate() > 0) {
-                resp.getWriter().print(ResponseUtil.genJson("Success", "Successfully Added.!"));
+            if (customerBO.addCustomer(new CustomerDTO(req.getParameter("cusID"),req.getParameter("cusName"),req.getParameter("cusAddress"),req.getParameter("cusSalary")))) {
+                resp.getWriter().print(ResponseUtil.genJson("Ok","Successfully Added...!"));
+            }else {
+                resp.getWriter().print(ResponseUtil.genJson("Error","Not Added...!"));
             }
-
-        } catch (ClassNotFoundException e) {
-            resp.setStatus(500);
-            resp.getWriter().print(ResponseUtil.genJson("Error", e.getMessage()));
-
-        } catch (SQLException e) {
+        }
+             catch (SQLException e) {
             resp.setStatus(500);
             resp.getWriter().print(ResponseUtil.genJson("Error", e.getMessage()));
 
@@ -92,31 +82,15 @@ public class CustomerServlet extends HttpServlet {
 
         JsonReader reader = Json.createReader(req.getReader());
         JsonObject jsonObject = reader.readObject();
-        String cusID = jsonObject.getString("id");
-        String cusName = jsonObject.getString("name");
-        String cusAddress = jsonObject.getString("address");
-        String salary = jsonObject.getString("salary");
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "sanu1234");
-
-            PreparedStatement pstm = connection.prepareStatement("update Customer set name=?,address=?,salary=? where id=?");
-            pstm.setObject(4, cusID);
-            pstm.setObject(1, cusName);
-            pstm.setObject(2, cusAddress);
-            pstm.setObject(3, salary);
-
-            if (pstm.executeUpdate() > 0) {
-                resp.getWriter().print(ResponseUtil.genJson("Success", "Customer Updated..!"));
+            if (customerBO.updateCustomer(new CustomerDTO(jsonObject.getString("id"),jsonObject.getString("name"),jsonObject.getString("address"),jsonObject.getString("salary")))) {
+                resp.getWriter().print(ResponseUtil.genJson("Ok","Successfully Updated...!"));
             }else{
-                resp.getWriter().print(ResponseUtil.genJson("Failed", "Customer Updated Failed..!"));
+                resp.getWriter().print(ResponseUtil.genJson("Error","Not Updated...!"));
             }
-        } catch (ClassNotFoundException e) {
-            resp.setStatus(500);
-            resp.getWriter().print(ResponseUtil.genJson("Error", e.getMessage()));
-        } catch (SQLException e) {
+        }
+             catch (SQLException e) {
             resp.setStatus(500);
             resp.getWriter().print(ResponseUtil.genJson("Error", e.getMessage()));
         }
@@ -128,21 +102,13 @@ public class CustomerServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String cusID = req.getParameter("cusID");
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/company", "root", "sanu1234");
-
-            PreparedStatement pstm = connection.prepareStatement("delete from Customer where id=?");
-            pstm.setObject(1, cusID);
-
-            if (pstm.executeUpdate() > 0) {
-                resp.getWriter().print(ResponseUtil.genJson("Success", "Customer Deleted..!"));
-            }else{
-                resp.getWriter().print(ResponseUtil.genJson("Failed", "Customer Delete Failed..!"));
+            if (customerBO.deleteCustomer(new CustomerDTO(req.getParameter("cusID")))) {
+                resp.getWriter().print(ResponseUtil.genJson("Ok","Successfully Deleted...!"));
+            }else {
+                resp.getWriter().print(ResponseUtil.genJson("Error","Not Deleted...!"));
             }
-        } catch (ClassNotFoundException e) {
-            resp.setStatus(500);
-            resp.getWriter().print(ResponseUtil.genJson("Error", e.getMessage()));
-        } catch (SQLException e) {
+        }
+             catch (SQLException e) {
             resp.setStatus(500);
             resp.getWriter().print(ResponseUtil.genJson("Error", e.getMessage()));
         }
