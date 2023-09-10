@@ -1,12 +1,12 @@
 <component name="libraryTable">
-  <library name="mysql-connector-j-8.1.0">
+  <library name="lib_back_end">
     <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../lib/commons-dbcp2-2.10.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/mysql-connector-j-8.1.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/commons-pool2-2.11.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../lib/commons-dbcp2-2.10.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../lib/javax.json-1.1.4.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/commons-logging-1.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/javax.json-api-1.1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/javax.json-1.1.4.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
