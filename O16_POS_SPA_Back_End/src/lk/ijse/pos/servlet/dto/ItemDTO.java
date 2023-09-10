@@ -12,4 +12,8 @@ public class ItemDTO {
     private String name;
     private String price;
     private String  qty;
+
+    public ItemDTO(String code) {
+
+    }
 }
